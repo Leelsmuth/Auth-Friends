@@ -1,27 +1,62 @@
 import React from "react";
-import { BrowserRouter as Router, Route, NavLink } from "react-router-dom";
+import { Route, NavLink, withRouter, Redirect } from "react-router-dom";
 import Login from "./components/Login";
-import PrivateRoute from "./components/PrivateRoute";
 import FriendsList from "./components/FriendsList";
+import AddFriend from "./components/AddFriend";
 import "./App.css";
 
-function App() {
+function App(props) {
+  const onLogout = () => {
+    localStorage.clear();
+    props.history.replace("/");
+  };
   return (
-    <Router>
-      <div className="App">
-        <nav>
-          <NavLink className="nav" to="/login">
+    <div className="App">
+      <nav>
+        <span>
+          <NavLink className="nav" exact to="/api/login">
             Login
           </NavLink>
           <NavLink className="nav" to="/friends">
             Friends
           </NavLink>
-        </nav>
-        <Route path="/login" component={Login} />
-        <PrivateRoute exact path="/friends" component={FriendsList} />
-      </div>
-    </Router>
+          <NavLink className="nav" to="/addFriend">
+            AddFriend
+          </NavLink>
+        </span>
+
+        <button onClick={onLogout}>Logout</button>
+      </nav>
+
+      <main>
+        <Route exact path="/api/login" component={Login} /> &nbsp;
+        <Route
+          exact
+          path="/addFriend"
+          render={props => {
+            if (localStorage.getItem("payload")) {
+              return <AddFriend {...props} />;
+            }
+            return <Redirect to="/api/login" />;
+          }}
+        />{" "}
+        &nbsp;
+        {/* (OPTION B) Create a secure Route for Quotes.
+        Alternatively, we could have the Quotes component
+        itself handle the redirect if no token. */}
+        <Route
+          exact
+          path="/friends"
+          render={props => {
+            if (localStorage.getItem("payload")) {
+              return <FriendsList {...props} />;
+            }
+            return <Redirect to="/api/login" />;
+          }}
+        />
+      </main>
+    </div>
   );
 }
 
-export default App;
+export default withRouter(App);

@@ -1,54 +1,37 @@
-import React from "react";
+import React, { useRef } from "react";
 import axios from "axios";
 
-class Login extends React.Component {
-  state = {
-    credentials: {
-      username: "",
-      password: ""
-    }
-  };
-  handleChange = e => {
-    this.setState({
-      credentials: {
-        ...this.state.credentials,
-        [e.target.name]: e.target.value
-      }
-    });
-  };
-  login = e => {
-    e.preventDefault();
+export default function Login(props) {
+  const usernameRef = useRef();
+  const passwordRef = useRef();
+
+  const submit = () => {
     axios
-      .post("http://localhost:5000/api/login", this.state.credentials)
-      .then(res => {
-        localStorage.setItem("token", res.data.payload);
-        this.props.history.replace("/friends");
+      .post("http://localhost:5000/api/login", {
+        username: usernameRef.current.value,
+        password: passwordRef.current.value
       })
-      .catch(err => console.log("error", err));
-    this.props.history.push("/friends");
+      .then(res => {
+        localStorage.setItem("payload", res.data.payload);
+
+        props.history.push("/friends");
+      })
+      .catch(error => {
+        alert(error.response.data.error);
+      });
   };
 
-  render() {
-    return (
-      <div>
-        <form onSubmit={this.login}>
-          <input
-            type="text"
-            name="username"
-            value={this.state.credentials.username}
-            onChange={this.handleChange}
-          />
-          <input
-            type="password"
-            name="password"
-            value={this.state.credentials.password}
-            onChange={this.handleChange}
-          />
-          <button onClick="/">Log In</button>
-        </form>
+  return (
+    <div className="login">
+      <div className="login-inputs">
+        username <input ref={usernameRef} type="text" />
+        <br />
+        password <input ref={passwordRef} type="text" />
       </div>
-    );
-  }
-}
 
-export default Login;
+      <div>
+        <button onClick={submit}>Submit</button>
+      </div>
+    </div>
+  );
+}
