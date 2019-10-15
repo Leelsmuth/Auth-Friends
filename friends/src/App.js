@@ -34,7 +34,7 @@ function App(props) {
           exact
           path="/addFriend"
           render={props => {
-            if (localStorage.getItem("payload")) {
+            if (localStorage.getItem("token")) {
               return <AddFriend {...props} />;
             }
             return <Redirect to="/api/login" />;
@@ -48,7 +48,7 @@ function App(props) {
           exact
           path="/friends"
           render={props => {
-            if (localStorage.getItem("payload")) {
+            if (localStorage.getItem("token")) {
               return <FriendsList {...props} />;
             }
             return <Redirect to="/api/login" />;

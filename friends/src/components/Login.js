@@ -12,7 +12,7 @@ export default function Login(props) {
         password: passwordRef.current.value
       })
       .then(res => {
-        localStorage.setItem("payload", res.data.payload);
+        localStorage.setItem("token", res.data.payload);
 
         props.history.push("/friends");
       })
