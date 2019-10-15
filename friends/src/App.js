@@ -14,7 +14,7 @@ function App(props) {
     <div className="App">
       <nav>
         <span>
-          <NavLink className="nav" exact to="/api/login">
+          <NavLink className="nav" exact to="/">
             Login
           </NavLink>
           <NavLink className="nav" to="/friends">
@@ -29,34 +29,30 @@ function App(props) {
       </nav>
 
       <main>
-        <Route exact path="/api/login" component={Login} /> &nbsp;
+        <Route exact path="/" component={Login} /> &nbsp;
         <Route
           exact
           path="/addFriend"
-          render={props => {
-            if (localStorage.getItem("token")) {
-              return <AddFriend {...props} />;
-            }
-            return <Redirect to="/api/login" />;
-          }}
-        />{" "}
-        &nbsp;
+          render={props => withAthCheck(AddFriend, props)}
+        />
         {/* (OPTION B) Create a secure Route for Quotes.
         Alternatively, we could have the Quotes component
         itself handle the redirect if no token. */}
         <Route
           exact
           path="/friends"
-          render={props => {
-            if (localStorage.getItem("token")) {
-              return <FriendsList {...props} />;
-            }
-            return <Redirect to="/api/login" />;
-          }}
+          render={props => withAthCheck(FriendsList, props)}
         />
       </main>
     </div>
   );
+}
+
+function withAthCheck(Component, props) {
+  if (localStorage.getItem("token")) {
+    return <Component {...props} />;
+  }
+  return <Redirect to="/" />;
 }
 
 export default withRouter(App);
